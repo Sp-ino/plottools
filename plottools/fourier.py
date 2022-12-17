@@ -42,10 +42,6 @@ def main():
     p.add_argument("filename", 
                    type = str, 
                    help = "name of the .csv file")
-    p.add_argument("-p", 
-                   "--userpath", 
-                   type = str, 
-                   help = "user specified path")
     p.add_argument("-x",
                    "--x_label",
                    type = str, 
@@ -82,13 +78,7 @@ def main():
 
     #----------------------Generate file paths and import-------------------
     #decide in which path to look for the files (default or user defined)
-    workdir = "ADC_test" 
-    if args.userpath is None:
-        filepath = f"/home/spino/PhD/Lavori/{workdir}/CSV/"
-    else:
-        filepath = args.userpath
-
-    file = filepath + args.filename
+    file = args.filename
 
     try:
         data = np.genfromtxt(file, delimiter = ",", dtype = np.double)
@@ -160,8 +150,7 @@ def main():
 
     if len(sndr_list) >= 2 and args.savethd:
         print("saving thd list...")
-        outname = "sndr_" + args.filename
-        outfile = filepath + outname
+        outfile = "sndr_" + args.filename
         np.savetxt(outfile, sndr_list, delimiter = ",")
     #-----------------------------------------------------------------------
 
@@ -191,15 +180,9 @@ def main():
     fig.tight_layout()
     
     #save and show the result
-    if args.userpath is None:
-        savepath = f"/home/spino/PhD/Lavori/{workdir}/CSV/" #if userpath is not specified then a default path is used 
-    else:
-        savepath = args.userpath[0:-4] + "Manoscritti/figures/"
-
-    figname = "dft_" + args.filename[0:-4] + ".png"
-    figurepath = savepath + figname
+    savepath = f"dft_{args.filename[0:-4]}.png"
     try:
-        fig.savefig(figurepath, dpi = 600)
+        fig.savefig(savepath, dpi = 600)
     except:
         print("Couldn't save figure to specified path. Check savepath and make sure it exists.")
 

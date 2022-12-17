@@ -42,11 +42,6 @@ def main():
                    type = str, 
                    help = "y label"
                    )
-    p.add_argument("-p", 
-                   "--userpath", 
-                   type = str, 
-                   help = "user specified path"
-                   )
     p.add_argument("-m",
                    "--multiplier",
                    type = float,
@@ -58,19 +53,9 @@ def main():
     args = p.parse_args()
     #------------------------------------------------------------------------------
     
-    
-    #---------------------------Generate file paths-------------------------
-    #decide in which path to look for the files (default or user defined)
-    if args.userpath is None:
-        filepath = "/home/spino/PhD/Lavori/ADC_test/CSV/" #if userpath is not specified then a default path is used 
-    else:
-        filepath = args.userpath
         
-    file = filepath + args.filename
-    #------------------------------------------------------------------------------
-    
-    
     #--------------------------Import list from csv--------------------------------
+    file = args.filename    
     try:
         data = args.multiplier * np.genfromtxt(file, delimiter = ",")
 
@@ -110,15 +95,9 @@ def main():
             verticalalignment = 'top', bbox = props)
 
     # Save figure
-    if args.userpath is None:   
-        savepath = "/home/spino/PhD/Lavori/ADC_test/Manoscritti/figures/"
-    else:
-        savepath = args.userpath[0:-4] + "Manoscritti/figures/"
-    figname = args.filename[0:-4] + ".png"
-    figurepath = savepath + figname
-    
+    savepath = f"{args.filename[0:-4]}.png"
     try:
-        fig.savefig(figurepath, dpi = 600)
+        fig.savefig(savepath, dpi = 600)
     except:
         print("Couldn't save figure to specified path. Check savepath and make sure it exists.")
 

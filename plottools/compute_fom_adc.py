@@ -21,10 +21,8 @@ def main():
 
     args = p.parse_args() 
 
-    workdir = "ADC_test" 
-    filepath = f"/home/spino/PhD/Lavori/{workdir}/CSV/"
-    sndr_file = filepath + args.sndr_file
-    pwr_file = filepath + args.pwr_file
+    sndr_file = args.sndr_file
+    pwr_file = args.pwr_file
     
     sndr_data = np.genfromtxt(sndr_file, delimiter=',')
     pwr_data = np.genfromtxt(pwr_file, delimiter=',')
@@ -48,7 +46,7 @@ def main():
         fom_data[idx] = power_consumption/(pow(2,enob) * sampling_frequ)        
     
 
-    savepath = filepath + "fom_v12c.csv"
+    savepath = "fom_v12c.csv"
     np.savetxt(savepath, fom_data, delimiter=',')
 
 

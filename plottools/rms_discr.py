@@ -31,21 +31,12 @@ def main():
     p.add_argument("filename", 
                    type = str, 
                    help = "name of the .csv file")
-    p.add_argument("-p", 
-                   "--userpath", 
-                   type = str, 
-                   help = "user specified path")
     args = p.parse_args() 
     #-----------------------------------------------------------------------
 
     #---------------------------Generate file paths-------------------------
     #decide in which path to look for the files (default or user defined)
-    if args.userpath is None:
-        filepath = "/home/spino/PhD/Lavori/ADC_test/CSV/" #if userpath is not specified then a default path is used 
-    else:
-        filepath = args.userpath
-    
-    file = filepath + args.filename
+    file = args.filename
     #-----------------------------------------------------------------------
 
     try:

@@ -36,11 +36,6 @@ def main():
                    type = str, 
                    help = "Name of the .csv file"
                    )
-    p.add_argument("-p", 
-                   "--userpath", 
-                   type = str, 
-                   help = "User specified path"
-                   )
     p.add_argument("-x", 
                    "--x_label",
                    type = str, 
@@ -98,13 +93,7 @@ def main():
     #-----------------------------------------------------------------------
 
     #----------------------Generate file paths and import-------------------
-    #decide in which path to look for the files (default or user defined)
-    if args.userpath is None:
-        filepath = "/home/spino/PhD/Lavori/sar_adc_testchip/CSV/" #if userpath is not specified then a default path is used 
-    else:
-        filepath = args.userpath
-    
-    file = filepath + args.filename
+    file = args.filename    
 
     try:
         data = np.genfromtxt(file, delimiter=",", dtype=np.double, skip_header=1)
@@ -195,15 +184,10 @@ the number of traces to be plotted.")
     #clean whitespace padding
     fig.tight_layout()
 
-    #save and show the result
-    savepath = "/home/spino/PhD/Lavori/sar_adc_testchip/Manoscritti/figures/"
-    figname = args.filename[0:-4] + ".png"
-    figurepath = savepath + figname
+    savepath = f"{args.filename[0:-4]}.png"
     try:
-        fig.savefig(figurepath, dpi = 600)
-        # Add log that tells the figure has been saved (and were it has been saved)
+        fig.savefig(savepath, dpi = 600)
     except:
-        # Replace with log
         print("Couldn't save figure to specified path. Check savepath and make sure it exists.")
 
     # Show figure before exiting
