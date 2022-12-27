@@ -14,7 +14,7 @@ setup(name='plottools',
                                     'histogr=plottools.histogr:main',
                                     'multi_axes_plot=plottools.multi_axes_plot:main',
                                     'rms_discr=plottools.rms_discr:main']},
-      install_requires=['matplotlib', 'numpy'],
+      install_requires=['matplotlib', 'numpy', 'scipy'],
       zip_safe=False)
 
 
