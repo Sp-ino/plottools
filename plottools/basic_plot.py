@@ -33,42 +33,42 @@ def main():
                         data.")
     
     p.add_argument("filename", 
-                   type = str, 
-                   help = "Name of the .csv file"
+                   type=str, 
+                   help="Name of the .csv file"
                    )
     p.add_argument("-x", 
                    "--x_label",
-                   type = str, 
-                   help = "x axis label")
+                   type=str, 
+                   help="x axis label")
     p.add_argument("-y", 
                    "--y_label", 
-                   type = str, 
-                   help = "y axis label"
+                   type=str, 
+                   help="y axis label"
                    )
     p.add_argument("-a", 
                    "--start", 
-                   type = int, 
-                   help = "Starting index from which to plot"
+                   type=int, 
+                   help="Starting index from which to plot"
                    )
     p.add_argument("-o", 
                    "--stop", 
-                   type = int, 
-                   help = "Index of the last element to be plotted"
+                   type=int, 
+                   help="Index of the last element to be plotted"
                    )
     p.add_argument("-l",
                     "--legend",
-                    type = str,
-                    nargs = "+",
-                    default = None,
-                    help = "Names to be used in the legend. If there are more names \
+                    type=str,
+                    nargs="+",
+                    default=None,
+                    help="Names to be used in the legend. If there are more names \
                             than the number of traces, the extra ones are ignored."
                     )
     p.add_argument("-c",
                    "--columns",
-                   type = int,
-                   nargs = "+",
-                   default = None,
-                   help = "Indices of the columns to plot as y data from the .csv. \
+                   type=int,
+                   nargs="+",
+                   default=None,
+                   help="Indices of the columns to plot as y data from the .csv. \
                         The count should start from 1 if the first column of the .csv \
                         represents the x axis. If a 0 is passed as argument, the program \
                         will assume that column 0 of the .csv  also represents y data \
@@ -76,12 +76,20 @@ def main():
                         samples. If an index is specified more than once the extra \
                         occurrences are ignored."
                    )
+    p.add_argument("-f",
+                   "--formatting",
+                   type=str,
+                   nargs="+",
+                   default=None,
+                   help="Formatting with which each column should be plotted. Formattings will be \
+                        applied in the same order with which they are specified to each of \
+                        the traces that are plotted")
     p.add_argument("-m",
                    "--multipliers",
-                   type = float,
-                   nargs = "+",
-                   default = None,
-                   help = "y data is multiplied by the specified factors.\
+                   type=float,
+                   nargs="+",
+                   default=None,
+                   help="y data is multiplied by the specified factors.\
                            Default value is 1 for all columns. The number \
                            of multipliers that are passed to the program \
                            must coincide with the number of y data columns \
@@ -98,7 +106,7 @@ def main():
     try:
         data = np.genfromtxt(file, delimiter=",", dtype=np.double, skip_header=1)
     except FileNotFoundError as e:
-        raise OSError(e)
+        raise FileNotFoundError("Could not open csv file. Check that it exists and/or you have permission to read it.")
 
     # Remove header
     # _, data = data[0], data[1:]
@@ -140,23 +148,24 @@ def main():
     else:                       # otherwise plot only the specified ones
         col_indices = np.unique(args.columns)
 
-    num_y_cols = col_indices.shape[0] 
+    num_y_cols = col_indices.shape[0]
 
     if num_data_cols == 1 and 0 not in col_indices:
         raise Warning("Option -c: the .csv file that has been imported has just one column of data. \
 If you want to plot it rerun the script with the option --columns 0 or -c 0.")
     
     if (0 not in col_indices and num_y_cols > num_data_cols-1) or (0 in col_indices and num_y_cols > num_data_cols):
-        raise OSError("Option -c: The number of selcted columns must be less or equal than the number \
+        raise ValueError("Option -c: The number of selcted columns must be less or equal than the number \
 of columns in the .csv file.")
 
     if np.any(col_indices[col_indices > num_data_cols]) or np.any(col_indices[col_indices < 0]):
-        raise OSError("Option -c: one (or more) of the specified indices is invalid.")
+        raise ValueError("Option -c: one (or more) of the specified indices is invalid.")
     
+
     # Manage scaling factor for each trace
     if args.multipliers is not None:
         if len(args.multipliers) != num_y_cols:
-            raise OSError("Option -m: the number of multipliers that are specified must coincide with \
+            raise ValueError("Option -m: the number of multipliers that are specified must coincide with \
 the number of traces to be plotted.")
         multipliers = np.expand_dims(np.array(args.multipliers), 0)
     else:
@@ -168,11 +177,14 @@ the number of traces to be plotted.")
 
     y = multipliers * data[start_index:stop_index, col_indices]
 
-    if 0 not in col_indices:
-        x = data[start_index:stop_index, 0]
-        ax.plot(x, y)
-    else:
-        ax.plot(y)
+    for idx, trace in enumerate(y.transpose()):
+        formatting = f"{args.formatting[idx]}" if args.formatting is not None else ''
+
+        if 0 not in col_indices:
+            x = data[start_index:stop_index, 0]
+            ax.plot(x, trace, formatting)
+        else:
+            ax.plot(trace, formatting)
 
     # #add legend if necessary
     if args.legend is not None:
