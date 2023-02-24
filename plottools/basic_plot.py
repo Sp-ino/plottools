@@ -178,7 +178,10 @@ the number of traces to be plotted.")
     y = multipliers * data[start_index:stop_index, col_indices]
 
     for idx, trace in enumerate(y.transpose()):
-        formatting = f"{args.formatting[idx]}" if args.formatting is not None else ''
+        try:
+            formatting = f"{args.formatting[idx]}" if args.formatting is not None else ''
+        except IndexError:
+            formatting = ''
 
         if 0 not in col_indices:
             x = data[start_index:stop_index, 0]
@@ -188,7 +191,7 @@ the number of traces to be plotted.")
 
     # #add legend if necessary
     if args.legend is not None:
-        ax.legend(legend_names, loc = "lower right")
+        ax.legend(legend_names, loc = "upper right")
     
     ax.set_xlabel(xlab) #add x label
     ax.set_ylabel(ylab) #add y label
