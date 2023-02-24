@@ -83,15 +83,23 @@ def main():
                    default=None,
                    help="Formatting with which each column should be plotted. Formattings will be \
                         applied in the same order with which they are specified to each of \
-                        the traces that are plotted")
-    p.add_argument("-m",
-                   "--multipliers",
+                        the traces that are plotted.")
+    p.add_argument("-xm",
+                   "--xmultiplier",
+                   type=float,
+                   default=1,
+                   help="x data is multiplied by the specified factors.\
+                        Default value is 1. Will be ignored if x data is \
+                        not used."
+                   )
+    p.add_argument("-ym",
+                   "--ymultipliers",
                    type=float,
                    nargs="+",
                    default=None,
                    help="y data is multiplied by the specified factors.\
                            Default value is 1 for all columns. The number \
-                           of multipliers that are passed to the program \
+                           of ymultipliers that are passed to the program \
                            must coincide with the number of y data columns \
                            that are going to be plotted (this takes into account \
                            the -c option)."
@@ -163,19 +171,19 @@ of columns in the .csv file.")
     
 
     # Manage scaling factor for each trace
-    if args.multipliers is not None:
-        if len(args.multipliers) != num_y_cols:
-            raise ValueError("Option -m: the number of multipliers that are specified must coincide with \
+    if args.ymultipliers is not None:
+        if len(args.ymultipliers) != num_y_cols:
+            raise ValueError("Option -m: the number of ymultipliers that are specified must coincide with \
 the number of traces to be plotted.")
-        multipliers = np.expand_dims(np.array(args.multipliers), 0)
+        ymultipliers = np.expand_dims(np.array(args.ymultipliers), 0)
     else:
-        multipliers = np.ones((1, num_y_cols))
+        ymultipliers = np.ones((1, num_y_cols))
     #-----------------------------------------------------------------------
 
     #-----------------------Extract traces, plot and save-------------------
     fig, ax = plt.subplots(figsize=(7.5, 4.5))
 
-    y = multipliers * data[start_index:stop_index, col_indices]
+    y = ymultipliers * data[start_index:stop_index, col_indices]
 
     for idx, trace in enumerate(y.transpose()):
         try:
@@ -184,7 +192,7 @@ the number of traces to be plotted.")
             formatting = ''
 
         if 0 not in col_indices:
-            x = data[start_index:stop_index, 0]
+            x = args.xmultipliers * data[start_index:stop_index, 0]
             ax.plot(x, trace, formatting)
         else:
             ax.plot(trace, formatting)
