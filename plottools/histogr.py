@@ -86,13 +86,15 @@ def main():
         r'$\mu=%.2f$' % (mean, ),
         r'$\sigma=%.2f$' % (stdev, ),
         r'$N_{points}=%d$' % (datalen, ),
-        r'$Min=%f$' % (np.min(data), ),
-        r'$Max=%f$' % (np.max(data), ),
+        r'$Min=%.2f$' % (np.min(data), ),
+        r'$Max=%.2f$' % (np.max(data), ),
         ))
     
     ax.hist(data)
     ax.text(0.05, 0.95, textstr, transform = ax.transAxes, fontsize = 14,
             verticalalignment = 'top', bbox = props)
+    ax.set_xlabel(args.x_label)
+    ax.set_ylabel(args.y_label)
 
     # Save figure
     savepath = f"{args.filename[0:-4]}.png"
