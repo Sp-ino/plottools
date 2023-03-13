@@ -85,7 +85,7 @@ def main():
                         applied in the same order with which they are specified to each of \
                         the traces that are plotted.")
     p.add_argument("-xm",
-                   "--xmultiplier",
+                   "--xmultipliers",
                    type=float,
                    default=1,
                    help="x data is multiplied by the specified factors.\
@@ -196,10 +196,13 @@ the number of traces to be plotted.")
 
     # #add legend if necessary
     if args.legend is not None:
-        ax.legend(legend_names, loc = "lower right")
+        formatted_legend_names = []
+        for idx, name in enumerate(legend_names):
+            formatted_legend_names.append(r'$%s$'%(name, ))
+        ax.legend(formatted_legend_names, loc = "lower right")
     
-    ax.set_xlabel(xlab) #add x label
-    ax.set_ylabel(ylab) #add y label
+    ax.set_xlabel(r'$%s$'%(xlab, )) #add x label
+    ax.set_ylabel(r'$%s$'%(ylab, )) #add y label
 
     #clean whitespace padding
     fig.tight_layout()

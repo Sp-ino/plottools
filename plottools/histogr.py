@@ -78,7 +78,7 @@ def main():
     
     
     #--------------------------Generate histogram and save figure------------------
-    fig, ax = plt.subplots(figsize=(7.5, 4.5))
+    fig, ax = plt.subplots(figsize=(6, 4))
     
     props = dict(boxstyle='round', facecolor='wheat', alpha=0.5)
     #textstr = f"$\mu={mean}$ \n$\sigma={stdev}$ \n $N_p={datalen}$"
@@ -90,11 +90,11 @@ def main():
         r'$Max=%.2f$' % (np.max(data), ),
         ))
     
-    ax.hist(data)
-    ax.text(0.05, 0.95, textstr, transform = ax.transAxes, fontsize = 14,
+    ax.hist(data,edgecolor='black',color='tab:orange', weights=np.ones(data.shape[0])/data.shape[0], bins=8) #,range=(0,100))
+    ax.text(0.05, 0.95, textstr, transform = ax.transAxes, fontsize = 16,
             verticalalignment = 'top', bbox = props)
-    ax.set_xlabel(args.x_label)
-    ax.set_ylabel(args.y_label)
+    ax.set_xlabel(r'$%s$'%(args.x_label, ))
+    ax.set_ylabel(r'$%s$'%(args.y_label, ))
 
     # Save figure
     savepath = f"{args.filename[0:-4]}.png"

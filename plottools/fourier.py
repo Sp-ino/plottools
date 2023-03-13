@@ -173,8 +173,8 @@ def main():
     # ax.legend(loc = "lower right")
     
 
-    ax.set_xlabel(xlab) #add x label
-    ax.set_ylabel(ylab) #add y label
+    ax.set_xlabel(r'$%s$'%(xlab, )) #add x label
+    ax.set_ylabel(r'$%s$'%(ylab, )) #add y label
 
     #clean whitespace padding
     fig.tight_layout()
