@@ -63,7 +63,14 @@ def main():
                    help = "Whether weights are used.\
                            Default value is False"
                    )
-    
+    p.add_argument("-s",
+                    "--figsize",
+                    type=float,
+                    nargs=2,
+                    default=[6.5, 4.5], 
+                    help="Figure size. Is defined by two values, e.g. -s 6 4 \
+                        Default value is 6.5 4.5"
+                    )    
     
     args = p.parse_args()
     #------------------------------------------------------------------------------

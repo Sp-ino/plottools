@@ -41,18 +41,18 @@ def main():
                    default=["x axis"],
                    type=str,
                    nargs="+",
-                   help="x axis label. If --axes is True, " \
-                    "the same label will be used for all the subplots" \
-                    "unless more than one label is passed"
+                   help="x axis label. If --axes is True,  \
+                    the same label will be used for all the subplots \
+                    unless more than one label is passed"
                    )
     p.add_argument("-y", 
                    "--y_labels",
                    default=["y axis"],
                    type=str,
                    nargs="+",
-                   help="y axis label. If --axes is True, " \
-                    "the same label will be used for all the subplots" \
-                    "unless more than one label is passed"
+                   help="y axis label. If --axes is True,  \
+                    the same label will be used for all the subplots \
+                    unless more than one label is passed"
                    )
     p.add_argument("-a", 
                    "--start", 
@@ -117,9 +117,17 @@ def main():
                    "--axes",
                    type=bool,
                    default=False, 
-                   help="Whether each trace is plotted in a separate subplot." \
-                        "Default value is False"
+                   help="Whether each trace is plotted in a separate subplot. \
+                        Default value is False"
                    )
+    p.add_argument("-s",
+                   "--figsize",
+                   type=float,
+                   nargs=2,
+                   default=[6.5, 4.5], 
+                   help="Figure size. Is defined by two values, e.g. -s 6 4 \
+                        Default value is 6.5 4.5"
+                   )    
 
     args = p.parse_args() 
     #-----------------------------------------------------------------------
@@ -216,7 +224,7 @@ the number of traces to be plotted.")
 
     n_axes = num_y_cols if use_axes else 1
 
-    fig, axes = plt.subplots(n_axes, figsize=(7.5, 4.5))
+    fig, axes = plt.subplots(n_axes, figsize=args.figsize)
     
     if not use_axes:    
         axes = [axes]
