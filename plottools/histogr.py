@@ -49,6 +49,21 @@ def main():
                    help = "data is multiplied by the specified factor.\
                            Default value is 1"
                    )
+    p.add_argument("-b",
+                   "--bins",
+                   type = int,
+                   default = 10,
+                   help = "Number of bins to use for the histogram plot.\
+                           Default value is 10"
+                   )
+    p.add_argument("-w",
+                   "--weights",
+                   type = bool,
+                   default = False,
+                   help = "Whether weights are used.\
+                           Default value is False"
+                   )
+    
     
     args = p.parse_args()
     #------------------------------------------------------------------------------
@@ -67,7 +82,15 @@ def main():
         print("\nCould not import " + args.filename)
         sys.exit(1)
     #------------------------------------------------------------------------------
-     
+
+
+    #---------------------------------Manage arguments-----------------------------
+    if args.weights:
+        weights = np.ones(data.shape[0])/data.shape[0]
+    else:
+        weights = None
+    #------------------------------------------------------------------------------
+    
     
     #------------------------Compute mean and standard dev-------------------------
     datalen = len(data)
@@ -78,7 +101,7 @@ def main():
     
     
     #--------------------------Generate histogram and save figure------------------
-    fig, ax = plt.subplots(figsize=(6, 4))
+    fig, ax = plt.subplots(figsize=(6.5, 4.5))
     
     props = dict(boxstyle='round', facecolor='wheat', alpha=0.5)
     #textstr = f"$\mu={mean}$ \n$\sigma={stdev}$ \n $N_p={datalen}$"
@@ -90,8 +113,8 @@ def main():
         r'$Max=%.2f$' % (np.max(data), ),
         ))
     
-    ax.hist(data,edgecolor='black',color='tab:orange', weights=np.ones(data.shape[0])/data.shape[0], bins=8) #,range=(0,100))
-    ax.text(0.05, 0.95, textstr, transform = ax.transAxes, fontsize = 16,
+    ax.hist(data,edgecolor='black',color='tab:orange', weights=weights, bins=args.bins) #,range=(0,100))
+    ax.text(0.05, 0.95, textstr, transform = ax.transAxes, fontsize = 12,
             verticalalignment = 'top', bbox = props)
     ax.set_xlabel(r'$%s$'%(args.x_label, ))
     ax.set_ylabel(r'$%s$'%(args.y_label, ))
