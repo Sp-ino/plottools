@@ -37,13 +37,22 @@ def main():
                    help="Name of the .csv file"
                    )
     p.add_argument("-x", 
-                   "--x_label",
-                   type=str, 
-                   help="x axis label")
+                   "--x_labels",
+                   default=["x axis"],
+                   type=str,
+                   nargs="+",
+                   help="x axis label. If --axes is True,  \
+                    the same label will be used for all the subplots \
+                    unless more than one label is passed"
+                   )
     p.add_argument("-y", 
-                   "--y_label", 
-                   type=str, 
-                   help="y axis label"
+                   "--y_labels",
+                   default=["y axis"],
+                   type=str,
+                   nargs="+",
+                   help="y axis label. If --axes is True,  \
+                    the same label will be used for all the subplots \
+                    unless more than one label is passed"
                    )
     p.add_argument("-a", 
                    "--start", 
@@ -85,7 +94,7 @@ def main():
                         applied in the same order with which they are specified to each of \
                         the traces that are plotted.")
     p.add_argument("-xm",
-                   "--xmultiplier",
+                   "--xmultipliers",
                    type=float,
                    default=1,
                    help="x data is multiplied by the specified factors.\
@@ -104,6 +113,21 @@ def main():
                            that are going to be plotted (this takes into account \
                            the -c option)."
                    )
+    p.add_argument("-ax",
+                   "--axes",
+                   type=bool,
+                   default=False, 
+                   help="Whether each trace is plotted in a separate subplot. \
+                        Default value is False"
+                   )
+    p.add_argument("-s",
+                   "--figsize",
+                   type=float,
+                   nargs=2,
+                   default=[6.5, 4.5], 
+                   help="Figure size. Is defined by two values, e.g. -s 6 4 \
+                        Default value is 6.5 4.5"
+                   )    
 
     args = p.parse_args() 
     #-----------------------------------------------------------------------
@@ -124,6 +148,9 @@ def main():
     #-----------------------------------------------------------------------
 
     #----------------------Save arguments into variables--------------------
+    # Manage --axes argument
+    use_axes = args.axes  
+
     # Manage start and stop arguments
     if args.start is not None:  
         start_index = args.start
@@ -134,17 +161,6 @@ def main():
         stop_index = args.stop + 1
     else:
         stop_index = data.shape[0]
-
-    # Manage labels
-    if args.x_label is not None:
-        xlab = args.x_label
-    else:
-        xlab = "x axis"
-
-    if args.y_label is not None:
-        ylab = args.y_label
-    else:
-        ylab = "y axis"
 
     # Manage legend names
     if args.legend is not None:
@@ -178,12 +194,40 @@ the number of traces to be plotted.")
         ymultipliers = np.expand_dims(np.array(args.ymultipliers), 0)
     else:
         ymultipliers = np.ones((1, num_y_cols))
+
+    # Manage labels
+    if len(args.x_labels) == 1:
+        xlabels = args.x_labels * num_y_cols
+    else:
+        if not use_axes:
+            print("Warning: --axes is False but more than one x label is being passed. The extra ones will be ignored.")
+        else:
+            if not len(args.x_labels) == num_y_cols:
+                raise ValueError("If more than one x label is specified, the number of labels " \
+                    "must be equal to the number of subplots")
+        xlabels = args.x_labels
+
+    if len(args.y_labels) == 1:
+        ylabels = args.y_labels * num_y_cols
+    else:
+        if not use_axes:
+            print("Warning: --axes is False but more than one y label is being passed. The extra ones will be ignored.")
+        else:
+            if not len(args.y_labels) == num_y_cols:
+                raise ValueError("If more than one y label is specified, the number of labels " \
+                    "must be equal to the number of subplots")
+        ylabels = args.y_labels
     #-----------------------------------------------------------------------
 
-    #-----------------------Extract traces, plot and save-------------------
-    fig, ax = plt.subplots(figsize=(7.5, 4.5))
-
+    #-----------------------Extract traces, plot and save-------------------  
     y = ymultipliers * data[start_index:stop_index, col_indices]
+
+    n_axes = num_y_cols if use_axes else 1
+
+    fig, axes = plt.subplots(n_axes, figsize=args.figsize)
+    
+    if not use_axes:    
+        axes = [axes]
 
     for idx, trace in enumerate(y.transpose()):
         try:
@@ -193,16 +237,26 @@ the number of traces to be plotted.")
 
         if 0 not in col_indices:
             x = args.xmultipliers * data[start_index:stop_index, 0]
-            ax.plot(x, trace, formatting)
+            if use_axes:
+                axes[idx].plot(x, trace, formatting)
+            else:
+                axes[0].plot(x, trace, formatting)
         else:
-            ax.plot(trace, formatting)
+            if use_axes:
+                axes[idx].plot(trace, formatting)
+            else:
+                axes[0].plot(trace, formatting)
 
     # #add legend if necessary
-    if args.legend is not None:
-        ax.legend(legend_names, loc = "upper right")
-    
-    ax.set_xlabel(xlab) #add x label
-    ax.set_ylabel(ylab) #add y label
+    for ax, xlab, ylab  in zip(axes, xlabels, ylabels):
+        ax.set_xlabel(r'$%s$'%(xlab, )) #add x label
+        ax.set_ylabel(r'$%s$'%(ylab, )) #add y label
+
+    if args.legend is not None and not use_axes:
+        formatted_legend_names = []
+        for idx, name in enumerate(legend_names):
+            formatted_legend_names.append(r'$%s$'%(name, ))
+        axes[0].legend(formatted_legend_names, loc = "lower right")
 
     #clean whitespace padding
     fig.tight_layout()
