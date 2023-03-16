@@ -224,7 +224,7 @@ the number of traces to be plotted.")
 
     n_axes = num_y_cols if use_axes else 1
 
-    fig, axes = plt.subplots(n_axes, figsize=args.figsize)
+    fig, axes = plt.subplots(n_axes, figsize=args.figsize, sharex=False)
     
     if not use_axes:    
         axes = [axes]
