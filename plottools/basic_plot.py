@@ -230,7 +230,10 @@ the number of traces to be plotted.")
         axes = [axes]
 
     for idx, trace in enumerate(y.transpose()):
-        formatting = f"{args.formatting[idx]}" if args.formatting is not None else ''
+        try:
+            formatting = f"{args.formatting[idx]}" if args.formatting is not None else ''
+        except IndexError:
+            formatting = ''
 
         if 0 not in col_indices:
             x = args.xmultipliers * data[start_index:stop_index, 0]
