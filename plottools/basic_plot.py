@@ -34,8 +34,7 @@ def main():
     
     p.add_argument("filename", 
                    type=str, 
-                   help="Name of the .csv file"
-                   )
+                   help="Name of the .csv file")
     p.add_argument("-x", 
                    "--x_labels",
                    default=["x axis"],
@@ -43,8 +42,7 @@ def main():
                    nargs="+",
                    help="x axis label. If --axes is True,  \
                     the same label will be used for all the subplots \
-                    unless more than one label is passed"
-                   )
+                    unless more than one label is passed")
     p.add_argument("-y", 
                    "--y_labels",
                    default=["y axis"],
@@ -52,26 +50,22 @@ def main():
                    nargs="+",
                    help="y axis label. If --axes is True,  \
                     the same label will be used for all the subplots \
-                    unless more than one label is passed"
-                   )
+                    unless more than one label is passed")
     p.add_argument("-a", 
                    "--start", 
                    type=int, 
-                   help="Starting index from which to plot"
-                   )
+                   help="Starting index from which to plot")
     p.add_argument("-o", 
                    "--stop", 
                    type=int, 
-                   help="Index of the last element to be plotted"
-                   )
+                   help="Index of the last element to be plotted")
     p.add_argument("-l",
                     "--legend",
                     type=str,
                     nargs="+",
                     default=None,
                     help="Names to be used in the legend. If there are more names \
-                            than the number of traces, the extra ones are ignored."
-                    )
+                            than the number of traces, the extra ones are ignored.")
     p.add_argument("-c",
                    "--columns",
                    type=int,
@@ -83,8 +77,7 @@ def main():
                         will assume that column 0 of the .csv  also represents y data \
                         and the selected columns will be plotted against the number of \
                         samples. If an index is specified more than once the extra \
-                        occurrences are ignored."
-                   )
+                        occurrences are ignored.")
     p.add_argument("-f",
                    "--formatting",
                    type=str,
@@ -99,8 +92,7 @@ def main():
                    default=1,
                    help="x data is multiplied by the specified factors.\
                         Default value is 1. Will be ignored if x data is \
-                        not used."
-                   )
+                        not used.")
     p.add_argument("-ym",
                    "--ymultipliers",
                    type=float,
@@ -111,23 +103,27 @@ def main():
                            of ymultipliers that are passed to the program \
                            must coincide with the number of y data columns \
                            that are going to be plotted (this takes into account \
-                           the -c option)."
-                   )
+                           the -c option).")
     p.add_argument("-ax",
                    "--axes",
                    type=bool,
                    default=False, 
                    help="Whether each trace is plotted in a separate subplot. \
-                        Default value is False"
-                   )
+                        Default value is False")
     p.add_argument("-s",
                    "--figsize",
                    type=float,
                    nargs=2,
                    default=[6.5, 4.5], 
-                   help="Figure size. Is defined by two values, e.g. -s 6 4 \
-                        Default value is 6.5 4.5"
-                   )    
+                   help="Figure size. It is defined by two values, e.g. -s 6 4 \
+                        Default value is 6.5 4.5")    
+    p.add_argument("-p",
+                   "--legendpos",
+                   type=str,
+                   default="right", 
+                   help="Position of the legend. Argument is ignored if no legend " \
+                        "is displayed.")    
+
 
     args = p.parse_args() 
     #-----------------------------------------------------------------------
@@ -256,7 +252,7 @@ the number of traces to be plotted.")
         formatted_legend_names = []
         for idx, name in enumerate(legend_names):
             formatted_legend_names.append(r'$%s$'%(name, ))
-        axes[0].legend(formatted_legend_names, loc = "lower right")
+        axes[0].legend(formatted_legend_names, loc = args.legendpos)
 
     #clean whitespace padding
     fig.tight_layout()
