@@ -71,6 +71,25 @@ def main():
                     help="Figure size. Is defined by two values, e.g. -s 6 4 \
                         Default value is 6.5 4.5"
                     )    
+    p.add_argument("-hp",
+                   "--horizontalpos",
+                   type=float,
+                   default=0.05, 
+                   help="Horizontal position of the legend. Argument is ignored if no legend " \
+                        "is displayed.")    
+    p.add_argument("-vp",
+                   "--verticalpos",
+                   type=float,
+                   default=0.65, 
+                   help="Vertical position of the legend. Argument is ignored if no legend " \
+                        "is displayed.")    
+    p.add_argument("-r",
+                   "--range",
+                   type=float,
+                   nargs=2,
+                   default=None, 
+                   help="x-axis range. Must be specified as two float numbers which represent " \
+                    "the interval's extremities (e.g. -r -5 5).")    
     
     args = p.parse_args()
     #------------------------------------------------------------------------------
@@ -120,9 +139,19 @@ def main():
         r'$Max=%.2f$' % (np.max(data), ),
         ))
     
-    ax.hist(data,edgecolor='black',color='tab:orange', weights=weights, bins=args.bins) #,range=(0,100))
-    ax.text(0.05, 0.95, textstr, transform = ax.transAxes, fontsize = 12,
-            verticalalignment = 'top', bbox = props)
+    ax.hist(data,edgecolor='black',
+            color='tab:orange',
+            weights=weights,
+            bins=args.bins,
+            range=args.range)
+
+    ax.text(args.horizontalpos, 
+            args.verticalpos,
+            textstr,
+            transform = ax.transAxes,
+            fontsize = 12,
+            bbox = props)
+
     ax.set_xlabel(r'$%s$'%(args.x_label, ))
     ax.set_ylabel(r'$%s$'%(args.y_label, ))
 
