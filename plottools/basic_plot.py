@@ -123,6 +123,11 @@ def main():
                    default="right", 
                    help="Position of the legend. Argument is ignored if no legend " \
                         "is displayed.")    
+    p.add_argument("-lw",
+                   "--linewidth",
+                   type=float,
+                   default=1.2, 
+                   help="Linewidth to be used in the plot.")    
 
 
     args = p.parse_args() 
@@ -234,14 +239,14 @@ the number of traces to be plotted.")
         if 0 not in col_indices:
             x = args.xmultipliers * data[start_index:stop_index, 0]
             if use_axes:
-                axes[idx].plot(x, trace, formatting)
+                axes[idx].plot(x, trace, formatting, linewidth=args.linewidth)
             else:
-                axes[0].plot(x, trace, formatting)
+                axes[0].plot(x, trace, formatting, linewidth=args.linewidth)
         else:
             if use_axes:
-                axes[idx].plot(trace, formatting)
+                axes[idx].plot(trace, formatting, linewidth=args.linewidth)
             else:
-                axes[0].plot(trace, formatting)
+                axes[0].plot(trace, formatting, linewidth=args.linewidth)
 
     # #add legend if necessary
     for ax, xlab, ylab  in zip(axes, xlabels, ylabels):
