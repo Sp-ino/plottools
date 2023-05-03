@@ -70,7 +70,19 @@ def main():
                    type = bool,
                    default = None,
                    help = "This option allows proper computation of THD when the input signal is a tone at Nyquist.")
-        
+    p.add_argument("-hp",
+                   "--horizontalpos",
+                   type=float,
+                   default=0.05, 
+                   help="Horizontal position of the legend. Argument is ignored if no legend " \
+                        "is displayed.")    
+    p.add_argument("-vp",
+                   "--verticalpos",
+                   type=float,
+                   default=0.65, 
+                   help="Vertical position of the legend. Argument is ignored if no legend " \
+                        "is displayed.")    
+
     
     args = p.parse_args() 
     #-----------------------------------------------------------------------
@@ -106,12 +118,12 @@ def main():
     if args.x_label is not None:
         xlab = args.x_label
     else:
-        xlab = "frequency [Hz]"
+        xlab = "Frequency [Hz]"
 
     if args.y_label is not None:
         ylab = args.y_label
     else:
-        ylab = "magnitude [dB20]"
+        ylab = "Magnitude [dB20]"
     #-----------------------------------------------------------------------
 
 
@@ -139,14 +151,17 @@ def main():
         thdlin = totsquared/(linydata[index, fundam_index]**2)
         thd = 10*np.log10(thdlin)   
         sndr_list.append(-thd)
-        print("SNDR =", -thd)
+        print(f"SNDR = {-thd}")
 
     start_index = 0
-    stop_index = N
+    stop_index = N//2
     
     xdata = np.linspace(0.0, 1.0/(Tsample), N+1) #compute x-axis for the DFT
     ydata = 20*np.log10(linydata)               #compute DFT in dB
-    prettyprint_harms(xdata, ydata[0])
+
+    sfdr = ydata[0, 1] - np.max(ydata[0, 2:stop_index])
+    print(f"SFDR: {sfdr}")
+    # prettyprint_harms(xdata, ydata[0])
 
     if len(sndr_list) >= 2 and args.savethd:
         print("saving thd list...")
@@ -165,16 +180,19 @@ def main():
         props = dict(boxstyle='round', facecolor='wheat', alpha=0.5)
         textstr = '\n'.join((
             r'$SNDR =%.2f$' % (sndr_list[0], ),
+            r'$SFDR =%.2f$' % (sfdr, ),
             ))
-        ax.text(0.05, 0.95, textstr, transform = ax.transAxes, fontsize = 14,
+        ax.text(args.horizontalpos, args.verticalpos, textstr, transform = ax.transAxes, fontsize = 14,
                 verticalalignment = 'top', bbox = props)
 
     # #add legend if necessary
     # ax.legend(loc = "lower right")
     
 
-    ax.set_xlabel(r'$%s$'%(xlab, )) #add x label
-    ax.set_ylabel(r'$%s$'%(ylab, )) #add y label
+    # ax.set_xlabel(r'$%s$'%(xlab, )) #add x label
+    # ax.set_ylabel(r'$%s$'%(ylab, )) #add y label
+    ax.set_xlabel(xlab) #add x label
+    ax.set_ylabel(ylab) #add y label
 
     #clean whitespace padding
     fig.tight_layout()
