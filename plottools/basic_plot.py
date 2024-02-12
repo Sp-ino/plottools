@@ -15,13 +15,7 @@ from argparse import ArgumentParser
 
 
 
-def main():
-    plt.rcParams.update({
-        "text.usetex": True,
-        "font.family": "serif",
-        "font.serif": ["Palatino"]
-        })
-    
+def main():    
     #------------------------------Argument parsing-------------------------
     p = ArgumentParser(description = 
                        "This script allows to plot traces imported from .csv files. The .csv file is \
@@ -126,11 +120,28 @@ def main():
     p.add_argument("-lw",
                    "--linewidth",
                    type=float,
-                   default=1.2, 
+                   default=1.5, 
                    help="Linewidth to be used in the plot.")    
+    p.add_argument("-e",
+                   "--extension",
+                   type=str,
+                   default=".pdf", 
+                   help="Extension to save figure with.")
+    p.add_argument("-fs",
+                   "--fontsize",
+                   type=int,
+                   default="15",
+                   help="Font size to be used in figure")  
 
 
-    args = p.parse_args() 
+    args = p.parse_args()
+
+    plt.rcParams.update({
+    "text.usetex": True,
+    "font.family": "serif",
+    "font.serif": ["Palatino"],
+    "font.size": str(args.fontsize)
+    })
     #-----------------------------------------------------------------------
 
     #----------------------Generate file paths and import-------------------
@@ -262,7 +273,7 @@ the number of traces to be plotted.")
     #clean whitespace padding
     fig.tight_layout()
 
-    savepath = f"{args.filename[0:-4]}.png"
+    savepath = f"{args.filename[0:-4]}{args.extension}"
     try:
         fig.savefig(savepath, dpi = 600)
     except:
